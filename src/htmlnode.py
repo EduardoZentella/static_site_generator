@@ -1,3 +1,4 @@
+import json
 class HTMLNode():
     def __init__(self, tag=None, value=None, children=None, props=None):
         self.tag = tag
@@ -12,4 +13,5 @@ class HTMLNode():
         return "".join(list(map(lambda prop: f' {prop[0]}="{prop[1]}"', self.props.items())))
     
     def __repr__(self):
+        json_props = json.dumps(self.props)
         return f"HTMLNode({self.tag}, {self.value}, {self.children}, {self.props})"

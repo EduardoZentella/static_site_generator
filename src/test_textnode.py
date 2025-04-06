@@ -15,7 +15,7 @@ class TestTextNode(unittest.TestCase):
         node2 = TextNode("This is a different text node", TextType.NORMAL_TEXT)
         node3 = TextNode("This is a text node", TextType.BOLD_TEXT, "https://www.boot.dev")
         self.assertEqual(repr(node), "TextNode(This is a text node, normal, https://www.boot.dev)")
-        self.assertEqual(repr(node2), "TextNode(This is a different text node, normal, None)")
+        self.assertEqual(repr(node2), "TextNode(This is a different text node, normal)")
         self.assertNotEqual(repr(node), repr(node3))
 
     def test_text_type_enum_values(self):
@@ -44,7 +44,7 @@ class TestTextNode(unittest.TestCase):
     def test_empty_text_node(self):
         node = TextNode("", TextType.NORMAL_TEXT)
         self.assertEqual(node.text, "")
-        self.assertEqual(repr(node), "TextNode(, normal, None)")
+        self.assertEqual(repr(node), "TextNode(, normal)")
 
     def test_url_present_for_non_link_or_image(self):
         node = TextNode("text", TextType.BOLD_TEXT, "https://example.com")

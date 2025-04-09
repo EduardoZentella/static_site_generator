@@ -14,9 +14,8 @@ def block_to_block_type(block):
     """
     lines = block.strip().split("\n")
     
-    if len(lines) == 1 and lines[0].startswith("#"):
-        if lines[0].lstrip("#").startswith(" "):
-            return BlockType.HEADING
+    if all(line.startswith("#") and line.lstrip("#").startswith(" ") for line in lines):
+        return BlockType.HEADING
     
     if lines[0].startswith("```") and lines[-1].startswith("```"):
         return BlockType.CODE

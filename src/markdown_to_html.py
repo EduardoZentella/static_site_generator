@@ -1,8 +1,6 @@
 from utils import markdown_to_block, text_to_textnodes, text_node_to_html_node
 from blocknode import block_to_block_type, BlockType
 from parentnode import ParentNode
-from htmlnode import HTMLNode
-from textnode import TextNode, TextType
 from leafnode import LeafNode
 
 def encase_blocks(blocks):

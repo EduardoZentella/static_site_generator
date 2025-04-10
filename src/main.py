@@ -1,4 +1,5 @@
 from textnode import TextNode, TextType
+from markdown_to_html import markdown_to_html_node
 import os
 import shutil
 
@@ -8,6 +9,12 @@ def main():
     print("Copying files from static to public directory")
     copy_files_to_public()
     print("Files copied successfully")
+    generate_page(
+        from_path="content/index.md",
+        template_path="template.html",
+        dest_path="public/index.html"
+    )
+    
 
 def copy_folder_contents(src, dest):
         """
@@ -40,10 +47,42 @@ def copy_files_to_public():
     copy_folder_contents(static_dir, public_dir)
     print(f"Copied files from {static_dir} to {public_dir}")
     
+def extract_title(markdown):
+    """
+    Extracts the title from a markdown string.
+    """
+    if not isinstance(markdown, str):
+        raise TypeError("Markdown must be a string")
+    
+    lines = markdown.split("\n")
+    for line in lines:
+        if line.startswith("# "):
+            return line[2:].strip()
+    raise Exception("No title found in markdown")
 
-        
-
-
+def generate_page(from_path, template_path, dest_path):
+    """
+    Generates a page from a markdown file using a template.
+    """
+    if not isinstance(from_path, str) or not isinstance(template_path, str) or not isinstance(dest_path, str):
+        raise TypeError("Paths must be strings")
+    
+    print(f"Generating page from {from_path} to {dest_path} using template {template_path}")
+    
+    with open(from_path, 'r') as f:
+        markdown = f.read()
+    
+    with open(template_path, 'r') as f:
+        template = f.read()
+    
+    html = markdown_to_html_node(markdown).to_html()
+    title = extract_title(markdown)
+    
+    page_content = template.replace("{{ Title }}", title).replace("{{ Content }}", html)
+    
+    with open(dest_path, 'w') as f:
+        f.write(page_content)
+    print(f"Page generated at {dest_path}")
 
 if __name__ == "__main__":
     main()

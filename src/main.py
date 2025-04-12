@@ -1,11 +1,10 @@
-from textnode import TextNode, TextType
 from markdown_to_html import markdown_to_html_node
 import os
 import sys
 import shutil
 
 def main():
-    basepath = sys.argv[0] if sys.argv[0] else "/"
+    basepath = sys.argv[1] if sys.argv[1] else "/"
     copy_files_to_docs()
     print("Generating pages from markdown files")
     generate_pages_recursively("content", "template.html", "docs", basepath)

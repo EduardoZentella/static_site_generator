@@ -1,16 +1,14 @@
 from textnode import TextNode, TextType
 from markdown_to_html import markdown_to_html_node
 import os
+import sys
 import shutil
 
 def main():
-    test = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
-    print(test)
-    print("Copying files from static to public directory")
-    copy_files_to_public()
-    print("Files copied successfully")
+    basepath = sys.argv[0] if sys.argv[0] else "/"
+    copy_files_to_docs()
     print("Generating pages from markdown files")
-    generate_pages_recursively("content", "template.html", "public")
+    generate_pages_recursively("content", "template.html", "docs", basepath)
     
 
 def copy_folder_contents(src, dest):
@@ -29,18 +27,16 @@ def copy_folder_contents(src, dest):
             else:
                 shutil.copy2(src_path, dest_path)
 
-def copy_files_to_public():
+def copy_files_to_docs():
     """
-    Copies all files from static to the public directory.
+    Copies all files from static to the docs directory.
     """
     static_dir = "static"
-    public_dir = "public"
+    public_dir = "docs"
     if not os.path.exists(public_dir):
         os.makedirs(public_dir)
-    # Remove existing files in public directory recursively
     if os.path.exists(public_dir):
         shutil.rmtree(public_dir)
-    # Copy files from static to public directory with recursive copy and logging
     copy_folder_contents(static_dir, public_dir)
     print(f"Copied files from {static_dir} to {public_dir}")
     
@@ -57,7 +53,7 @@ def extract_title(markdown):
             return line[2:].strip()
     raise Exception("No title found in markdown")
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     """
     Generates a page from a markdown file using a template.
     """
@@ -76,12 +72,13 @@ def generate_page(from_path, template_path, dest_path):
     title = extract_title(markdown)
     
     page_content = template.replace("{{ Title }}", title).replace("{{ Content }}", html)
+    updated_page = page_content.replace('href="/', f'href="{basepath}').replace('src="/', f'src="{basepath}')
     
     with open(dest_path, 'w') as f:
-        f.write(page_content)
+        f.write(updated_page)
     print(f"Page generated at {dest_path}")
 
-def generate_pages_recursively(dir_path_content, template_path, dest_path_content):
+def generate_pages_recursively(dir_path_content, template_path, dest_path_content, basepath):
     """
     Generates pages recursively from a directory of markdown files.
     """
@@ -93,11 +90,11 @@ def generate_pages_recursively(dir_path_content, template_path, dest_path_conten
         dest_path = os.path.join(dest_path_content, item)
         
         if os.path.isdir(src_path):
-            generate_pages_recursively(src_path, template_path, dest_path)
+            generate_pages_recursively(src_path, template_path, dest_path, basepath)
         elif src_path.endswith(".md"):
             dest_file_name = f"{os.path.splitext(item)[0]}.html"
             dest_file_path = os.path.join(dest_path_content, dest_file_name)
-            generate_page(src_path, template_path, dest_file_path)
+            generate_page(src_path, template_path, dest_file_path, basepath)
 
 if __name__ == "__main__":
     main()

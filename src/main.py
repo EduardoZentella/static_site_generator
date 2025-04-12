@@ -9,11 +9,8 @@ def main():
     print("Copying files from static to public directory")
     copy_files_to_public()
     print("Files copied successfully")
-    generate_page(
-        from_path="content/index.md",
-        template_path="template.html",
-        dest_path="public/index.html"
-    )
+    print("Generating pages from markdown files")
+    generate_pages_recursively("content", "template.html", "public")
     
 
 def copy_folder_contents(src, dest):
@@ -83,6 +80,24 @@ def generate_page(from_path, template_path, dest_path):
     with open(dest_path, 'w') as f:
         f.write(page_content)
     print(f"Page generated at {dest_path}")
+
+def generate_pages_recursively(dir_path_content, template_path, dest_path_content):
+    """
+    Generates pages recursively from a directory of markdown files.
+    """
+    if not os.path.exists(dest_path_content):
+        os.makedirs(dest_path_content)
+    
+    for item in os.listdir(dir_path_content):
+        src_path = os.path.join(dir_path_content, item)
+        dest_path = os.path.join(dest_path_content, item)
+        
+        if os.path.isdir(src_path):
+            generate_pages_recursively(src_path, template_path, dest_path)
+        elif src_path.endswith(".md"):
+            dest_file_name = f"{os.path.splitext(item)[0]}.html"
+            dest_file_path = os.path.join(dest_path_content, dest_file_name)
+            generate_page(src_path, template_path, dest_file_path)
 
 if __name__ == "__main__":
     main()
